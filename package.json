@@ -28,7 +28,7 @@
 		"mp-scripts": "./bin/mp-scripts.js"
 	},
 	"scripts": {
-		"lint": "mp-scripts lint-js"
+		"lint": "eslint --config ./config/.eslintrc.json ."
 	},
 	"dependencies": {
 		"@svgr/webpack": "^5.1.0",
