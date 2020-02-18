@@ -25,6 +25,7 @@ const {
 	hasBabelConfig,
 	hasPostCSSConfig,
 	getArg,
+	hasArg,
 } = require( '../utils' );
 
 const { path: pkgPath } = readPkgUp( {
@@ -155,7 +156,7 @@ module.exports = {
 		new MiniCssExtractPlugin( {
 			filename: '[name].css',
 		} ),
-		new DependencyExtractionWebpackPlugin( { injectPolyfill: true } ),
+		! hasArg('--no-deps') && new DependencyExtractionWebpackPlugin( { injectPolyfill: true } ),
 		new RemoveSuprefluousAssetsPlugin(),
 		! isProduction && new LiveReloadPlugin(),
 	].filter( Boolean ),

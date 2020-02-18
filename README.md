@@ -43,6 +43,23 @@ However it is intended to use this module in the `scripts` section in the `packa
 }
 ```
 
+### WordPress dependencies
+
+This package uses [@wordpress/dependency-extraction-webpack-plugin](https://www.npmjs.com/package/@wordpress/dependency-extraction-webpack-plugin) to extract wordpress dependencies. It does two things:
+* Externalize dependencies that are available as script dependencies on modern WordPress sites.
+* Add an asset file for each entry point that declares an object with the list of WordPress script dependencies for the entry point. The asset file also contains the current version calculated for the current source code.
+
+This plugin is enabled by default with default configuration but can be easyli turned off by passing `--no-deps` flag to your build script:
+``` json
+{
+	"scripts": {
+		"build": "mp-scripts build --no-deps",
+	}
+}
+```
+
+If you need to use this plugin with other configuration (for example you want it to generate `json` files instead `php` - see the plugin's documentation) you can extend webpack config. See [Advanced Usage](https://www.npmjs.com/package/@micropackage/scripts#%EF%B8%8F-advanced-usage) for more information.
+
 ## 📜 Available Scripts
 
 ### `build`
