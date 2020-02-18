@@ -132,7 +132,7 @@ To extend default [webpack](https://webpack.js.org/) config you can provide your
 
 In the example below a webpack.config.js file is added to the root folder extending the provided [webpack](https://webpack.js.org/) config to include [url-loader](https://github.com/webpack-contrib/url-loader) for images:
 ```javascript
-const defaultConfig = require( "@micropackage/scripts/config/[webpack](https://webpack.js.org/).config" );
+const defaultConfig = require( "@micropackage/scripts/config/webpack.config" );
 
 module.exports = {
 	...defaultConfig,
