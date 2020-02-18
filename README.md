@@ -59,17 +59,24 @@ All the params passed to this script will be passed forward to [webpack](https:/
 *Example:*
 ```json
 {
-    "scripts": {
-        "build": "mp-scripts build",
-        "build:custom": "mp-scripts build entry-one.js entry-two.js --output-path=custom",
-        "build:other": "mp-scripts build --entry-dir=other/src --output-dir=other/dist --js-dir=scripts --style-dir=styles"
-    }
+	"scripts": {
+		"build": "mp-scripts build",
+		"build:dev": "mp-scripts build --mode=development",
+		"build:custom": "mp-scripts build entry-one.js entry-two.js --output-path=custom",
+		"build:other": "mp-scripts build --entry-dir=other/src --output-dir=other/dist --js-dir=scripts --style-dir=styles"
+	}
 }
 ```
 How to use it:
 - `yarn build` - builds the code for production using entries from `src/assets/js` and `src/assets/scss`. Only files located directly in this folders will be used. All file names starting with `_` (underscore) are skipped. Output files will be placed inside `dist/js` and `dist/css` directories
 - `yarn build:custom` - builds the code for production with two entry points and a custom output folder. Paths for custom entry points are relative to the project root.
 - `yarn build:other` - this will work like the default build, but will look for entries inside `other/src/scripts` and `other/src/styles` directories. Output files will be placed inside `other/dist/scripts` and `other/dist/styles`.
+
+#### Mode
+
+By default `build` script will work in production mode. There are two ways to use another mode:
+* by adding `--mode` argument to your command
+* by setting NODE_ENV variable
 
 ### `lint-js`
 Lints your code using [eslint](https://eslint.org/).
@@ -78,10 +85,11 @@ Default linting ruleset is [@wordpress/eslint-plugin/recommended](https://www.np
 *Example:*
 ```json
 {
-    "scripts": {
-        "lint:js": "mp-scripts lint-js",
-        "lint:js:src": "mp-scripts lint-js ./src"
-    }
+	"scripts": {
+		"lint:js": "mp-scripts lint-js",
+		"fix:js": "mp-scripts lint-js --fix",
+		"lint:js:src": "mp-scripts lint-js ./src"
+	}
 }
 ```
 
@@ -97,10 +105,11 @@ Uses [stylelint](https://stylelint.io/) to lint your style files.
 *Example:*
 ```json
 {
-    "scripts": {
-        "lint:style": "mp-scripts lint-style",
-        "lint:css:src": "mp-scripts lint-style 'src/**/*.css'"
-    }
+	"scripts": {
+		"lint:style": "mp-scripts lint-style",
+		"fix:style": "mp-scripts lint-style --fix",
+		"lint:css:src": "mp-scripts lint-style 'src/**/*.css'"
+	}
 }
 ```
 How to use it:
@@ -126,7 +135,7 @@ This script works exactly like `build` but configured for development. It will a
 
 This package ships with default config files for [eslint](https://eslint.org/), [stylelint](https://stylelint.io/) and [webpack](https://webpack.js.org/). Each config file can be overriden in your project.
 
-### Extending [webpack](https://webpack.js.org/) config
+### Extending webpack config
 
 To extend default [webpack](https://webpack.js.org/) config you can provide your own `webpack.config.js` file and `require` the provided `webpack.config.js` file. You can use spread operator to import parts of the config.
 
@@ -157,6 +166,26 @@ module.exports = {
 	},
 };
 ```
+
+### Run scripts in parallel or sequential
+
+There are separate scripts to lint js and (s)css files, but it would be nice to have a single task to lint both. It can be accomplished using external modules, e.g. [npm-run-all](https://github.com/mysticatea/npm-run-all).
+Using this module ypu can define scripts which will run other scripts in parallel or sequential using `run-p` or `run-s` commands.
+```json
+{
+	"scripts": {
+		"lint:style": "mp-scripts lint-style",
+		"lint:js": "mp-scripts lint-js",
+		"fix:style": "mp-scripts lint-style --fix",
+		"fix:js": "mp-scripts lint-js --fix",
+		"lint": "run-p \"lint:*\"",
+		"lint:fix": "run-p \"fix:*\"",
+	}
+}
+```
+With the above config in your `package.json` you can run:
+* `yarn lint` - to run both `lint:style` and `lint:js` in parallel
+* `yarn lint:fix` - to run both `fix:style` and `fix:js` in parallel
 
 ## 📦 About the Micropackage project
 
