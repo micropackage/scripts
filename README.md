@@ -38,7 +38,7 @@ However it is intended to use this module in the `scripts` section in the `packa
 		"build": "mp-scripts build",
 		"lint:js": "mp-scripts lint-js",
 		"lint:style": "mp-scripts lint-style",
-		"start": "mp-scripts start",
+		"start": "mp-scripts start"
 	}
 }
 ```
