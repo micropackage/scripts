@@ -78,7 +78,7 @@ if ( ! entry ) {
 }
 
 const isProduction = process.env.NODE_ENV === 'production';
-const mode = isProduction ? 'production' : 'development';
+const mode = getArg( '--mode', isProduction ? 'production' : 'development' );
 
 module.exports = {
 	mode,
@@ -88,6 +88,7 @@ module.exports = {
 		path: path.join( path.dirname( pkgPath ), outputDir ),
 		filename: '[name].js',
 	},
+	devtool: 'development' === mode ? 'source-map' : false,
 	module: {
 		rules: [
 			{
