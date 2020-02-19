@@ -43,9 +43,9 @@ However it is intended to use this module in the `scripts` section in the `packa
 }
 ```
 
-### WordPress dependencies
+### WordPress Dependencies
 
-This package uses [@wordpress/dependency-extraction-webpack-plugin](https://www.npmjs.com/package/@wordpress/dependency-extraction-webpack-plugin) to extract wordpress dependencies. It does two things:
+This package uses the [Dependency Extraction Webpack Plugin](https://www.npmjs.com/package/@wordpress/dependency-extraction-webpack-plugin) to extract wordpress dependencies. It does two things:
 * Externalize dependencies that are available as script dependencies on modern WordPress sites.
 * Add an asset file for each entry point that declares an object with the list of WordPress script dependencies for the entry point. The asset file also contains the current version calculated for the current source code.
 
@@ -59,6 +59,50 @@ This plugin is enabled by default with default configuration but can be easyli t
 ```
 
 If you need to use this plugin with other configuration (for example you want it to generate `json` files instead `php` - see the plugin's documentation) you can extend webpack config. See [Advanced Usage](https://www.npmjs.com/package/@micropackage/scripts#%EF%B8%8F-advanced-usage) for more information.
+
+### Using WordPress Dependencies
+
+Let's assume we are creating a Gutenberg block. We want to import `Component` class and some Gutenberg components to use in our block. Entry file would be `custom-block.js`:
+```javascript
+import { Component } from '@wordpress/element';
+import { Button, CheckboxControl } from '@wordpress/components';
+
+...
+```
+
+While running `mp-scripts build` command the [Dependency Extraction Webpack Plugin](https://www.npmjs.com/package/@wordpress/dependency-extraction-webpack-plugin) will create additional php file containing an object with dependencies list and asset version. Note, that there is also no need to add imported packages to your `package.json` - since they are being externalized you don't need them in `node_modules`.
+The output files for this scenario are:
+* `custom-block.js`
+* `custom-block.asset.php`
+
+Both files are located in the output directory.
+The php file will have the following content:
+```php
+<?php return array('dependencies' => array('wp-components', 'wp-element', 'wp-polyfill'), 'version' => 'e7e3b282b35389ecd440edc71e073e5d');
+```
+Note that `version` will change if your source changes.
+
+Here is a simple example of usage:
+```php
+<?php
+add_action( 'enqueue_block_editor_assets', function() {
+	$dir        = plugin_dir_path( __FILE__ );
+	$src        = "{$dir}/dist/custom-block.js";
+	$asset_file = "{$dir}/dist/custom-block.asset.php";
+
+	if ( file_exists( $src ) && file_exists( $asset_file ) ) {
+		$asset_info = require $asset_file;
+
+		wp_enqueue_script(
+			'custom-block',
+			$src,
+			$asset_info['dependencies'],
+			$asset_info['version'],
+			true
+		);
+	}
+} );
+```
 
 ## 📜 Available Scripts
 
