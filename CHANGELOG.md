@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [next]
+## 1.0.1 - 19.02.2020
 
 * [Added] SourceMaps
 * [Added] Option tu turn off the DependencyExtractionWebpackPlugin
