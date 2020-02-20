@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [next] - [now]
+## 1.1.0 - 20.02.2020
 
 * [Added] Images handling
 * [Changed] Paths configuration
