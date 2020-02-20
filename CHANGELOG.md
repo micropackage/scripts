@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 1.1.0 - 20.02.2020
+
+* [Added] Images handling
+* [Changed] Paths configuration
+
 ## 1.0.1 - 19.02.2020
 
 * [Added] SourceMaps

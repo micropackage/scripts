@@ -8,7 +8,7 @@ const {
 	existsSync,
 } = require( 'fs' );
 
-const { pkg, path: pkgPath } = readPkgUp( {
+const { packageJson: pkg, path: pkgPath } = readPkgUp( {
 	cwd: realpathSync( process.cwd() ),
 } );
 
@@ -16,10 +16,19 @@ const getPackagePath = () => pkgPath;
 
 const hasPackageProp = ( prop ) => pkg && pkg.hasOwnProperty( prop );
 
+const getPackageProp = ( prop ) => {
+	if ( hasPackageProp( prop ) ) {
+		return pkg[ prop ];
+	}
+
+	return {};
+}
+
 const hasProjectFile = ( fileName ) => existsSync( path.join( path.dirname( getPackagePath() ), fileName ) );
 
 module.exports = {
 	getPackagePath,
+	getPackageProp,
 	hasPackageProp,
 	hasProjectFile,
 };

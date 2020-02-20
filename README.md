@@ -78,7 +78,7 @@ The output files for this scenario are:
 Both files are located in the output directory.
 The php file will have the following content:
 ```php
-<?php return array('dependencies' => array('wp-components', 'wp-element', 'wp-polyfill'), 'version' => 'e7e3b282b35389ecd440edc71e073e5d');
+<?php return array('dependencies' => array('wp-components', 'wp-element', 'wp-polyfill'), 'version' => 'e7e3b282b35389ecd440edc71e073e5d'); ?>
 ```
 Note that `version` will change if your source changes.
 
@@ -102,21 +102,51 @@ add_action( 'enqueue_block_editor_assets', function() {
 		);
 	}
 } );
+?>
 ```
 
 ## 📜 Available Scripts
 
 ### `build`
-Uses [webpack](https://webpack.js.org/) to transform your code. The default [webpack](https://webpack.js.org/) configuration scans entry directory and uses each file as an entry point. It is also possible to use css/scss files as entry points. Using [MiniCssExtractPlugin](https://github.com/[webpack](https://webpack.js.org/)-contrib/mini-css-extract-plugin) and a custom plugin for asset cleanup this will emit only css file for css/scss etry.
-All the params passed to this script will be passed forward to [webpack](https://webpack.js.org/). There are also params specific for this script:
+Uses [webpack](https://webpack.js.org/) to transform your code. By default it will scan the source paths to automatically create an entry point for each file. Subfolders are not scanned, also files which names start with underscore are skipped. Entry points can be js and (s)css files. Using [MiniCssExtractPlugin](https://github.com/webpack-contrib/mini-css-extract-plugin) and a custom plugin for asset cleanup this will emit only css file for (s)css entry.
 
-| Parameter        | Default Value | Description                                                                                              |
-|------------------|---------------|----------------------------------------------------------------------------------------------------------|
-| **--entry-dir**  | 'src/assets'  | Directory in which to look for entries.                                                                  |
-| **--output-dir** | 'dist'        | Output directory.<br/>_**Note:** this is not the same as [webpack](https://webpack.js.org/)'s `--output-path`. See examples below._ |
-| **--js-dir**     | 'js'          | Scripts dir inside `--entry-dir`                                                                         |
-| **--style-dir**  | 'scss'        | Style dir inside `--entry-dir`                                                                           |
+This script can be configured using CLI arguments or by setting up a `mpScriptsConfig` property in the `package.json`.
 
+All arguments other than listed below will be directly passed to [webpack](https://webpack.js.org/).
+
+#### Configuration
+
+| Name              | Argument           | Type         | Description                                                                                                     |
+|-------------------|--------------------|--------------|-----------------------------------------------------------------------------------------------------------------|
+| **urlLoader**     | --   | boolean\|number    | Whether to use [url-loader](https://github.com/webpack-contrib/url-loader) for images. If number is passed it will be used as '[limit](https://github.com/webpack-contrib/url-loader#limit)' option.<br />**Default: `true`** |
+| **imagemin**   | --   | boolean\|object  | Whether to use [image-webpack-loader](https://github.com/tcoopman/image-webpack-loader) to optimize images with [imagemin](https://github.com/imagemin/imagemin). Object will be passed as [image-webpack-loader](https://github.com/tcoopman/image-webpack-loader) configuration.<br />**Default: `true`** |
+| **paths.src**     | **--src-path**     | string | Source path relative to project root.<br />**Default: `'src/assets'`** |
+| **paths.output**  | **--output-path**  | string       | Output path relative to project root.<br />**Default: `'dist'`**                                                                           |
+| **paths.scripts** | **--scripts-path** | string         | Scripts path relative to `src\|output`. Use `false` to skip this path.<br />**Default: `'js'`**                                                  |
+| **paths.styles**  | **--styles-path**  | string       | Styles path relative to `src\|output`. Use `false` to skip this path.<br />**Default: `'scss'`**                                                   |
+| **paths.images**  | **--images-path**  | string       | Images path relative to `output`. Images included in scripts and styles will be placed in this location if `urlLoader` is turned off or the image size exceeds `limit`.<br />**Default: `'images'`**                                                   |
+
+*Example:*
+```json
+{
+	"mpScriptsConfig": {
+		"urlLoader": 8192,
+		"imagemin": {
+      "svgo": { "plugins": [
+        { "removeDoctype": false }
+      ] }
+    },
+		"paths": {
+			"src": "src/assets",
+			"output": "dist",
+			"scripts": "js",
+			"styles": "scss",
+		}
+	}
+}
+```
+
+#### Usage
 *Example:*
 ```json
 {
@@ -124,7 +154,7 @@ All the params passed to this script will be passed forward to [webpack](https:/
 		"build": "mp-scripts build",
 		"build:dev": "mp-scripts build --mode=development",
 		"build:custom": "mp-scripts build entry-one.js entry-two.js --output-path=custom",
-		"build:other": "mp-scripts build --entry-dir=other/src --output-dir=other/dist --js-dir=scripts --style-dir=styles"
+		"build:other": "mp-scripts build --entry-path=other/src --output-path=other/dist --scripts-path=scripts --styles-path=styles"
 	}
 }
 ```
@@ -135,7 +165,7 @@ How to use it:
 
 #### Mode
 
-By default `build` script will work in production mode. There are two ways to use another mode:
+By default `build` script will work in development mode. There are two ways to use another mode:
 * by adding `--mode` argument to your command
 * by setting NODE_ENV variable
 
@@ -180,14 +210,14 @@ How to use it:
 By default, files located in `dist`, `vendor` and `node_modules` folders are ignored.
 
 ### `start`
-This script works exactly like `build` but configured for development. It will also automatically rebuild if the code will change. All the params work the same as in `build` script.
+This script works exactly like `build` but configured for development. It will also automatically rebuild if the code will change. All the params work the same way as in `build` script.
 
 *Example:*
 ```json
 {
     "scripts": {
         "start": "mp-scripts start",
-        "start:custom": "mp-scripts start --entry-dir=custom/src --output-dir=custom/build"
+        "start:custom": "mp-scripts start --entry-path=custom/src --output-path=custom/build"
     }
 }
 ```
