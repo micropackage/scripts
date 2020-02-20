@@ -24,9 +24,9 @@ const getFileArgs = () => minimist( getArgs() )._;
 const hasFileArg = () => getFileArgs().length > 0;
 
 module.exports = {
-	getArgs,
 	getArg,
-	hasArg,
+	getArgs,
 	getFileArgs,
+	hasArg,
 	hasFileArg,
 };

@@ -8,6 +8,7 @@ const { basename } = require( 'path' );
  */
 const {
 	hasPackageProp,
+	getPackageProp,
 	hasProjectFile,
 } = require( './file' );
 const {
@@ -35,9 +36,7 @@ const hasWebpackConfig = () =>
 const getWebpackArgs = ( additionalArgs = [] ) => {
 	let webpackArgs = getArgs();
 
-	const hasWebpackOutputOption = hasArg( '-o' ) || hasArg( '--output' );
-
-	if ( hasFileArg() && ! hasWebpackOutputOption ) {
+	if ( hasFileArg() ) {
 		webpackArgs = webpackArgs.map( ( arg ) => {
 			if ( getFileArgs().includes( arg ) && ! arg.includes( '=' ) ) {
 				const entry = basename( arg, '.js' );
@@ -62,7 +61,10 @@ const getWebpackArgs = ( additionalArgs = [] ) => {
 	return webpackArgs;
 }
 
+const getScriptsConfig = () => ( getPackageProp( 'mpScriptsConfig' ) );
+
 module.exports = {
+	getScriptsConfig,
 	getWebpackArgs,
 	hasBabelConfig,
 	hasPostCSSConfig,

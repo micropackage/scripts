@@ -2,13 +2,14 @@
  * Internal dependencies
  */
 const {
-	getArgs,
 	getArg,
-	hasArg,
+	getArgs,
 	getFileArgs,
+	hasArg,
 	hasFileArg,
 } = require( './cli' );
 const {
+	getScriptsConfig,
 	getWebpackArgs,
 	hasBabelConfig,
 	hasPostCSSConfig,
@@ -20,15 +21,16 @@ const {
 } = require( './file' );
 
 module.exports = {
-	getArgs,
 	getArg,
-	hasArg,
+	getArgs,
 	getFileArgs,
-	hasFileArg,
 	getPackagePath,
-	hasPackageProp,
-	hasProjectFile,
+	getScriptsConfig,
 	getWebpackArgs,
+	hasArg,
 	hasBabelConfig,
+	hasFileArg,
+	hasPackageProp,
 	hasPostCSSConfig,
+	hasProjectFile,
 };

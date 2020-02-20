@@ -6,10 +6,10 @@ const LiveReloadPlugin = require( 'webpack-livereload-plugin' );
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require( 'path' );
 const {
-	readdirSync,
-	realpathSync,
 	existsSync,
 	lstatSync,
+	readdirSync,
+	realpathSync,
 } = require( 'fs' );
 
 /**
@@ -22,59 +22,89 @@ const DependencyExtractionWebpackPlugin = require( '@wordpress/dependency-extrac
  */
 const RemoveSuprefluousAssetsPlugin = require( '../plugins/remove-superfluous-assets' );
 const {
-	hasBabelConfig,
-	hasPostCSSConfig,
 	getArg,
+	getScriptsConfig,
 	hasArg,
+	hasBabelConfig,
+	hasFileArg,
+	hasPostCSSConfig,
 } = require( '../utils' );
 
 const { path: pkgPath } = readPkgUp( {
 	cwd: realpathSync( process.cwd() ),
 } );
 
-const entryDir = getArg( '--entry-dir', 'src/assets' );
-const outputDir = getArg( '--output-dir', 'dist' );
+const config = getScriptsConfig();
 
-const jsDir = getArg( '--js-dir', 'js' );
-const styleDir = getArg( '--style-dir', 'scss' );
+const paths = Object.assign( {
+	src: 'src/assets',
+	output: 'dist',
+	scripts: 'js',
+	styles: 'scss',
+	images: 'images',
+}, config && config.paths ? config.paths : {} );
 
-if ( ! existsSync( entryDir ) ) {
-	/* eslint-disable-next-line no-console */
-	console.log( 'Entry directory does not exist.' );
-	process.exit( 1 );
+for ( const pathKey in paths ) {
+	let pathValue = getArg( `--${ pathKey }-path`, paths[ pathKey ] );
+
+	if ( [ 'src', 'output' ].includes( pathKey ) && '/' !== pathValue.charAt( 0 ) ) {
+		pathValue = path.join( path.dirname( pkgPath ), pathValue );
+	} else if ( false !== pathValue ) {
+		paths[ `${ pathKey }Src` ] = path.join( paths.src, pathValue );
+		paths[ `${ pathKey }Output` ] = pathValue.replace( 'scss', 'css' );
+	} else {
+		paths[ `${ pathKey }Src` ] = false;
+	}
+
+	paths[ pathKey ] = pathValue;
 }
-
-const jsEntry = path.join( path.dirname( pkgPath ), entryDir, jsDir );
-const styleEntry = path.join( path.dirname( pkgPath ), entryDir, styleDir );
-const outputStyleDir = 'scss' === styleDir ? 'css' : styleDir;
 
 const entry = {};
 
-const addEntry = ( file, dir, ext = '.js' ) => {
-	const name = path.basename( file, ext );
+if ( ! hasFileArg() ) {
+	if ( ! existsSync( paths.src ) ) {
+		/* eslint-disable-next-line no-console */
+		console.log( 'Source directory does not exist.' );
+		process.exit( 1 );
+	}
 
-	if ( '_' !== name.charAt( 0 ) ) {
-		const filePath = path.join( dir, file );
-		const subdir = '.scss' === ext ? outputStyleDir : jsDir;
+	const addEntry = ( file, srcPath, outputPath ) => {
+		const ext = path.extname( file );
+		const name = path.basename( file, ext );
 
-		if ( lstatSync( filePath ).isFile() ) {
-			entry[ `${ subdir }/${ name }` ] = filePath;
+		if ( '_' !== name.charAt( 0 ) ) {
+			const filePath = path.join( srcPath, file );
+
+			if ( lstatSync( filePath ).isFile() ) {
+				entry[ `${ outputPath }/${ name }` ] = filePath;
+			}
 		}
 	}
-}
 
-if ( existsSync( jsEntry ) ) {
-	readdirSync( jsEntry ).forEach( ( file ) => addEntry( file, jsEntry ) );
-}
+	for ( const assetType of [ 'scripts', 'styles' ] ) {
+		const assetPath = paths[ `${ assetType }Src` ];
 
-if ( existsSync( styleEntry ) ) {
-	readdirSync( styleEntry ).forEach( ( file ) => addEntry( file, styleEntry, '.scss' ) );
-}
+		if ( false === assetPath ) {
+			continue;
+		}
 
-if ( ! entry ) {
-	/* eslint-disable-next-line no-console */
-	console.log( 'No entry files available.' );
-	process.exit( 1 );
+		if ( ! existsSync( assetPath ) ) {
+			const ucFirstAssetType = assetType.charAt( 0 ).toUpperCase() + assetType.slice( 1 );
+			/* eslint-disable-next-line no-console */
+			console.log( `${ ucFirstAssetType } directory does not exist.` );
+			process.exit( 1 );
+		}
+
+		const outputPath = paths[ `${ assetType }Output` ];
+
+		readdirSync( assetPath ).forEach( ( file ) => addEntry( file, assetPath, outputPath ) );
+	}
+
+	if ( ! entry ) {
+		/* eslint-disable-next-line no-console */
+		console.log( 'No entry files available.' );
+		process.exit( 1 );
+	}
 }
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -82,10 +112,9 @@ const mode = getArg( '--mode', isProduction ? 'production' : 'development' );
 
 module.exports = {
 	mode,
-	context: path.join( path.dirname( pkgPath ), entryDir ),
 	entry,
 	output: {
-		path: path.join( path.dirname( pkgPath ), outputDir ),
+		path: paths.output,
 		filename: '[name].js',
 	},
 	devtool: 'development' === mode ? 'source-map' : false,

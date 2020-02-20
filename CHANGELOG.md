@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [next] - [now]
+
+* [Changed] Paths configuration
+
 ## 1.0.1 - 19.02.2020
 
 * [Added] SourceMaps
