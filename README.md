@@ -132,10 +132,12 @@ All arguments other than listed below will be directly passed to [webpack](https
 	"mpScriptsConfig": {
 		"urlLoader": 8192,
 		"imagemin": {
-      "svgo": { "plugins": [
-        { "removeDoctype": false }
-      ] }
-    },
+			"svgo": { 
+				"plugins": [
+					{ "removeDoctype": false }
+				]
+			}
+		},
 		"paths": {
 			"src": "src/assets",
 			"output": "dist",
