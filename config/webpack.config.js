@@ -49,16 +49,12 @@ for ( const pathKey in paths ) {
 
 	if ( [ 'src', 'output' ].includes( pathKey ) && '/' !== pathValue.charAt( 0 ) ) {
 		pathValue = path.join( path.dirname( pkgPath ), pathValue );
-	} else if ( false !== pathValue ) {
-		paths[ `${ pathKey }Src` ] = path.join( paths.src, pathValue );
-		paths[ `${ pathKey }Output` ] = pathValue.replace( 'scss', 'css' );
-	} else {
-		paths[ `${ pathKey }Src` ] = false;
 	}
 
 	paths[ pathKey ] = pathValue;
 }
 
+let context;
 const entry = {};
 
 if ( ! hasFileArg() ) {
@@ -68,12 +64,15 @@ if ( ! hasFileArg() ) {
 		process.exit( 1 );
 	}
 
+	context = paths.src;
+
 	const addEntry = ( file, srcPath, outputPath ) => {
 		const ext = path.extname( file );
 		const name = path.basename( file, ext );
 
 		if ( '_' !== name.charAt( 0 ) ) {
 			const filePath = path.join( srcPath, file );
+			outputPath = outputPath.replace( 'scss', 'css' );
 
 			if ( lstatSync( filePath ).isFile() ) {
 				entry[ `${ outputPath }/${ name }` ] = filePath;
@@ -82,22 +81,20 @@ if ( ! hasFileArg() ) {
 	}
 
 	for ( const assetType of [ 'scripts', 'styles' ] ) {
-		const assetPath = paths[ `${ assetType }Src` ];
+		const srcPath = path.join( paths.src, paths[ assetType ] );
 
-		if ( false === assetPath ) {
+		if ( false === srcPath ) {
 			continue;
 		}
 
-		if ( ! existsSync( assetPath ) ) {
+		if ( ! existsSync( srcPath ) ) {
 			const ucFirstAssetType = assetType.charAt( 0 ).toUpperCase() + assetType.slice( 1 );
 			/* eslint-disable-next-line no-console */
 			console.log( `${ ucFirstAssetType } directory does not exist.` );
 			process.exit( 1 );
 		}
 
-		const outputPath = paths[ `${ assetType }Output` ];
-
-		readdirSync( assetPath ).forEach( ( file ) => addEntry( file, assetPath, outputPath ) );
+		readdirSync( srcPath ).forEach( ( file ) => addEntry( file, srcPath, paths[ assetType ] ) );
 	}
 
 	if ( ! entry ) {
@@ -112,6 +109,7 @@ const mode = getArg( '--mode', isProduction ? 'production' : 'development' );
 
 module.exports = {
 	mode,
+	context,
 	entry,
 	output: {
 		path: paths.output,
@@ -178,7 +176,30 @@ module.exports = {
 			},
 			{
 				test: /\.svg$/,
+				issuer: {
+					test: /\.jsx?$/
+				},
 				use: [ '@svgr/webpack' ],
+			},
+			{
+				test: /\.(png|svg|jpg|gif)$/,
+				use: [
+					{
+						loader: 'url-loader',
+						options: {
+							limit: config.urlLoader ? config.urlLoader : false,
+							name: '[name].[ext]',
+							outputPath: paths.images,
+						},
+					},
+					{
+						loader: 'image-webpack-loader',
+						options: {
+							disable: false === config.imagemin,
+							...( 'object' === typeof config.imagemin && config.imagemin ),
+						},
+					},
+				],
 			},
 		],
 	},

@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [next] - [now]
 
+* [Added] Images handling
 * [Changed] Paths configuration
 
 ## 1.0.1 - 19.02.2020
