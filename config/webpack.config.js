@@ -81,11 +81,11 @@ if ( ! hasFileArg() ) {
 	}
 
 	for ( const assetType of [ 'scripts', 'styles' ] ) {
-		const srcPath = path.join( paths.src, paths[ assetType ] );
-
-		if ( false === srcPath ) {
+		if ( false === paths[ assetType ] ) {
 			continue;
 		}
+
+		const srcPath = path.join( paths.src, paths[ assetType ] );
 
 		if ( ! existsSync( srcPath ) ) {
 			const ucFirstAssetType = assetType.charAt( 0 ).toUpperCase() + assetType.slice( 1 );
@@ -104,8 +104,8 @@ if ( ! hasFileArg() ) {
 	}
 }
 
-const isProduction = process.env.NODE_ENV === 'production';
-const mode = getArg( '--mode', isProduction ? 'production' : 'development' );
+const mode = getArg( '--mode', process.env.NODE_ENV === 'production' ? 'production' : 'development' );
+const isProduction = 'production' === mode;
 
 module.exports = {
 	mode,
@@ -115,7 +115,7 @@ module.exports = {
 		path: paths.output,
 		filename: '[name].js',
 	},
-	devtool: 'development' === mode ? 'source-map' : false,
+	devtool: isProduction ? false : 'source-map',
 	module: {
 		rules: [
 			{

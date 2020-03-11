@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [next] - [now]
+
+* [Fixed] Option to set `false` for a `scripts` or `styles` path is now working properly
+
 ## 1.1.0 - 20.02.2020
 
 * [Added] Images handling
