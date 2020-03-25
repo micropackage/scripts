@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [next] - [now]
 
 * [Fixed] Option to set `false` for a `scripts` or `styles` path is now working properly
+* [Fixed] isProduction constant is now defined based on cli args, not only NODE_ENV
 
 ## 1.1.0 - 20.02.2020
 
