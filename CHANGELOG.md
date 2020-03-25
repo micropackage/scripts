@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [next]
+## 1.1.1
 
 * [Added] Missing directory handling (displays warning about missing directory and processes the other)
 * [Fixed] Option to set `false` for a `scripts` or `styles` path is now working properly
