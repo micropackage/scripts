@@ -80,6 +80,9 @@ if ( ! hasFileArg() ) {
 		}
 	}
 
+	const directoryErrors = [];
+	let hasDirectory = false;
+
 	for ( const assetType of [ 'scripts', 'styles' ] ) {
 		if ( false === paths[ assetType ] ) {
 			continue;
@@ -89,12 +92,25 @@ if ( ! hasFileArg() ) {
 
 		if ( ! existsSync( srcPath ) ) {
 			const ucFirstAssetType = assetType.charAt( 0 ).toUpperCase() + assetType.slice( 1 );
-			/* eslint-disable-next-line no-console */
-			console.log( `${ ucFirstAssetType } directory does not exist.` );
-			process.exit( 1 );
+
+			directoryErrors.push( `${ ucFirstAssetType } directory does not exist. Skipping...` );
+			continue;
 		}
 
+		hasDirectory = true;
+
 		readdirSync( srcPath ).forEach( ( file ) => addEntry( file, srcPath, paths[ assetType ] ) );
+	}
+
+	if ( ! hasDirectory ) {
+		/* eslint-disable-next-line no-console */
+		console.log( `Scripts and styles directories does not exist.` );
+		process.exit( 1 );
+	} else if ( directoryErrors.length ) {
+		for ( const error of directoryErrors ) {
+			/* eslint-disable-next-line no-console */
+			console.log( error );
+		}
 	}
 
 	if ( ! entry ) {
