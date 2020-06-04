@@ -135,7 +135,8 @@ module.exports = {
 	entry,
 	output: {
 		path: paths.output,
-		filename: "[name].js"
+		filename: "[name].js",
+		publicPath: "../"
 	},
 	devtool: isProduction ? false : "source-map",
 	module: {
