@@ -1,34 +1,26 @@
 /**
  * Internal dependencies
  */
+const { getArg, getArgs, getFileArgs, hasArg, hasFileArg } = require("./cli");
 const {
-	getArgs,
-	getArg,
-	hasArg,
-	getFileArgs,
-	hasFileArg,
-} = require( './cli' );
-const {
+	getScriptsConfig,
 	getWebpackArgs,
 	hasBabelConfig,
-	hasPostCSSConfig,
-} = require( './config' );
-const {
-	getPackagePath,
-	hasPackageProp,
-	hasProjectFile,
-} = require( './file' );
+	hasPostCSSConfig
+} = require("./config");
+const { getPackagePath, hasPackageProp, hasProjectFile } = require("./file");
 
 module.exports = {
-	getArgs,
 	getArg,
-	hasArg,
+	getArgs,
 	getFileArgs,
-	hasFileArg,
 	getPackagePath,
-	hasPackageProp,
-	hasProjectFile,
+	getScriptsConfig,
 	getWebpackArgs,
+	hasArg,
 	hasBabelConfig,
+	hasFileArg,
+	hasPackageProp,
 	hasPostCSSConfig,
+	hasProjectFile
 };

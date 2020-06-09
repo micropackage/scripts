@@ -38,38 +38,138 @@ However it is intended to use this module in the `scripts` section in the `packa
 		"build": "mp-scripts build",
 		"lint:js": "mp-scripts lint-js",
 		"lint:style": "mp-scripts lint-style",
-		"start": "mp-scripts start",
+		"start": "mp-scripts start"
 	}
 }
+```
+
+### WordPress Dependencies
+
+This package uses the [Dependency Extraction Webpack Plugin](https://www.npmjs.com/package/@wordpress/dependency-extraction-webpack-plugin) to extract wordpress dependencies. It does two things:
+* Externalize dependencies that are available as script dependencies on modern WordPress sites.
+* Add an asset file for each entry point that declares an object with the list of WordPress script dependencies for the entry point. The asset file also contains the current version calculated for the current source code.
+
+This plugin is enabled by default with default configuration but can be easyli turned off by passing `--no-deps` flag to your build script:
+``` json
+{
+	"scripts": {
+		"build": "mp-scripts build --no-deps",
+	}
+}
+```
+
+If you need to use this plugin with other configuration (for example you want it to generate `json` files instead `php` - see the plugin's documentation) you can extend webpack config. See [Advanced Usage](https://www.npmjs.com/package/@micropackage/scripts#%EF%B8%8F-advanced-usage) for more information.
+
+### Using WordPress Dependencies
+
+Let's assume we are creating a Gutenberg block. We want to import `Component` class and some Gutenberg components to use in our block. Entry file would be `custom-block.js`:
+```javascript
+import { Component } from '@wordpress/element';
+import { Button, CheckboxControl } from '@wordpress/components';
+
+...
+```
+
+While running `mp-scripts build` command the [Dependency Extraction Webpack Plugin](https://www.npmjs.com/package/@wordpress/dependency-extraction-webpack-plugin) will create additional php file containing an object with dependencies list and asset version. Note, that there is also no need to add imported packages to your `package.json` - since they are being externalized you don't need them in `node_modules`.
+The output files for this scenario are:
+* `custom-block.js`
+* `custom-block.asset.php`
+
+Both files are located in the output directory.
+The php file will have the following content:
+```php
+<?php return array('dependencies' => array('wp-components', 'wp-element', 'wp-polyfill'), 'version' => 'e7e3b282b35389ecd440edc71e073e5d'); ?>
+```
+Note that `version` will change if your source changes.
+
+Here is a simple example of usage:
+```php
+<?php
+add_action( 'enqueue_block_editor_assets', function() {
+	$dir        = plugin_dir_path( __FILE__ );
+	$src        = "{$dir}/dist/custom-block.js";
+	$asset_file = "{$dir}/dist/custom-block.asset.php";
+
+	if ( file_exists( $src ) && file_exists( $asset_file ) ) {
+		$asset_info = require $asset_file;
+
+		wp_enqueue_script(
+			'custom-block',
+			$src,
+			$asset_info['dependencies'],
+			$asset_info['version'],
+			true
+		);
+	}
+} );
+?>
 ```
 
 ## 📜 Available Scripts
 
 ### `build`
-Uses [webpack](https://webpack.js.org/) to transform your code. The default [webpack](https://webpack.js.org/) configuration scans entry directory and uses each file as an entry point. It is also possible to use css/scss files as entry points. Using [MiniCssExtractPlugin](https://github.com/[webpack](https://webpack.js.org/)-contrib/mini-css-extract-plugin) and a custom plugin for asset cleanup this will emit only css file for css/scss etry.
-All the params passed to this script will be passed forward to [webpack](https://webpack.js.org/). There are also params specific for this script:
+Uses [webpack](https://webpack.js.org/) to transform your code. By default it will scan the source paths to automatically create an entry point for each file. Subfolders are not scanned, also files which names start with underscore are skipped. Entry points can be js and (s)css files. Using [MiniCssExtractPlugin](https://github.com/webpack-contrib/mini-css-extract-plugin) and a custom plugin for asset cleanup this will emit only css file for (s)css entry.
 
-| Parameter        | Default Value | Description                                                                                              |
-|------------------|---------------|----------------------------------------------------------------------------------------------------------|
-| **--entry-dir**  | 'src/assets'  | Directory in which to look for entries.                                                                  |
-| **--output-dir** | 'dist'        | Output directory.<br/>_**Note:** this is not the same as [webpack](https://webpack.js.org/)'s `--output-path`. See examples below._ |
-| **--js-dir**     | 'js'          | Scripts dir inside `--entry-dir`                                                                         |
-| **--style-dir**  | 'scss'        | Style dir inside `--entry-dir`                                                                           |
+This script can be configured using CLI arguments or by setting up a `mpScriptsConfig` property in the `package.json`.
+
+All arguments other than listed below will be directly passed to [webpack](https://webpack.js.org/).
+
+#### Configuration
+
+| Name              | Argument           | Type         | Description                                                                                                     |
+|-------------------|--------------------|--------------|-----------------------------------------------------------------------------------------------------------------|
+| **urlLoader**     | --   | boolean\|number    | Whether to use [url-loader](https://github.com/webpack-contrib/url-loader) for images. If number is passed it will be used as '[limit](https://github.com/webpack-contrib/url-loader#limit)' option.<br />**Default: `true`** |
+| **imagemin**   | --   | boolean\|object  | Whether to use [image-webpack-loader](https://github.com/tcoopman/image-webpack-loader) to optimize images with [imagemin](https://github.com/imagemin/imagemin). Object will be passed as [image-webpack-loader](https://github.com/tcoopman/image-webpack-loader) configuration.<br />**Default: `true`** |
+| **paths.src**     | **--src-path**     | string | Source path relative to project root.<br />**Default: `'src/assets'`** |
+| **paths.output**  | **--output-path**  | string       | Output path relative to project root.<br />**Default: `'dist'`**                                                                           |
+| **paths.scripts** | **--scripts-path** | string         | Scripts path relative to `src\|output`. Use `false` to skip this path.<br />**Default: `'js'`**                                                  |
+| **paths.styles**  | **--styles-path**  | string       | Styles path relative to `src\|output`. Use `false` to skip this path.<br />**Default: `'scss'`**                                                   |
+| **paths.images**  | **--images-path**  | string       | Images path relative to `output`. Images included in scripts and styles will be placed in this location if `urlLoader` is turned off or the image size exceeds `limit`.<br />**Default: `'images'`**                                                   |
 
 *Example:*
 ```json
 {
-    "scripts": {
-        "build": "mp-scripts build",
-        "build:custom": "mp-scripts build entry-one.js entry-two.js --output-path=custom",
-        "build:other": "mp-scripts build --entry-dir=other/src --output-dir=other/dist --js-dir=scripts --style-dir=styles"
-    }
+	"mpScriptsConfig": {
+		"urlLoader": 8192,
+		"imagemin": {
+			"svgo": { 
+				"plugins": [
+					{ "removeDoctype": false }
+				]
+			}
+		},
+		"paths": {
+			"src": "src/assets",
+			"output": "dist",
+			"scripts": "js",
+			"styles": "scss",
+		}
+	}
+}
+```
+
+#### Usage
+*Example:*
+```json
+{
+	"scripts": {
+		"build": "mp-scripts build",
+		"build:dev": "mp-scripts build --mode=development",
+		"build:custom": "mp-scripts build entry-one.js entry-two.js --output-path=custom",
+		"build:other": "mp-scripts build --entry-path=other/src --output-path=other/dist --scripts-path=scripts --styles-path=styles"
+	}
 }
 ```
 How to use it:
 - `yarn build` - builds the code for production using entries from `src/assets/js` and `src/assets/scss`. Only files located directly in this folders will be used. All file names starting with `_` (underscore) are skipped. Output files will be placed inside `dist/js` and `dist/css` directories
 - `yarn build:custom` - builds the code for production with two entry points and a custom output folder. Paths for custom entry points are relative to the project root.
 - `yarn build:other` - this will work like the default build, but will look for entries inside `other/src/scripts` and `other/src/styles` directories. Output files will be placed inside `other/dist/scripts` and `other/dist/styles`.
+
+#### Mode
+
+By default `build` script will work in development mode. There are two ways to use another mode:
+* by adding `--mode` argument to your command
+* by setting NODE_ENV variable
 
 ### `lint-js`
 Lints your code using [eslint](https://eslint.org/).
@@ -78,10 +178,11 @@ Default linting ruleset is [@wordpress/eslint-plugin/recommended](https://www.np
 *Example:*
 ```json
 {
-    "scripts": {
-        "lint:js": "mp-scripts lint-js",
-        "lint:js:src": "mp-scripts lint-js ./src"
-    }
+	"scripts": {
+		"lint:js": "mp-scripts lint-js",
+		"fix:js": "mp-scripts lint-js --fix",
+		"lint:js:src": "mp-scripts lint-js ./src"
+	}
 }
 ```
 
@@ -97,10 +198,11 @@ Uses [stylelint](https://stylelint.io/) to lint your style files.
 *Example:*
 ```json
 {
-    "scripts": {
-        "lint:style": "mp-scripts lint-style",
-        "lint:css:src": "mp-scripts lint-style 'src/**/*.css'"
-    }
+	"scripts": {
+		"lint:style": "mp-scripts lint-style",
+		"fix:style": "mp-scripts lint-style --fix",
+		"lint:css:src": "mp-scripts lint-style 'src/**/*.css'"
+	}
 }
 ```
 How to use it:
@@ -110,14 +212,14 @@ How to use it:
 By default, files located in `dist`, `vendor` and `node_modules` folders are ignored.
 
 ### `start`
-This script works exactly like `build` but configured for development. It will also automatically rebuild if the code will change. All the params work the same as in `build` script.
+This script works exactly like `build` but configured for development. It will also automatically rebuild if the code will change. All the params work the same way as in `build` script.
 
 *Example:*
 ```json
 {
     "scripts": {
         "start": "mp-scripts start",
-        "start:custom": "mp-scripts start --entry-dir=custom/src --output-dir=custom/build"
+        "start:custom": "mp-scripts start --entry-path=custom/src --output-path=custom/build"
     }
 }
 ```
@@ -126,13 +228,13 @@ This script works exactly like `build` but configured for development. It will a
 
 This package ships with default config files for [eslint](https://eslint.org/), [stylelint](https://stylelint.io/) and [webpack](https://webpack.js.org/). Each config file can be overriden in your project.
 
-### Extending [webpack](https://webpack.js.org/) config
+### Extending webpack config
 
 To extend default [webpack](https://webpack.js.org/) config you can provide your own `webpack.config.js` file and `require` the provided `webpack.config.js` file. You can use spread operator to import parts of the config.
 
 In the example below a webpack.config.js file is added to the root folder extending the provided [webpack](https://webpack.js.org/) config to include [url-loader](https://github.com/webpack-contrib/url-loader) for images:
 ```javascript
-const defaultConfig = require( "@micropackage/scripts/config/[webpack](https://webpack.js.org/).config" );
+const defaultConfig = require( "@micropackage/scripts/config/webpack.config" );
 
 module.exports = {
 	...defaultConfig,
@@ -157,6 +259,26 @@ module.exports = {
 	},
 };
 ```
+
+### Run scripts in parallel or sequential
+
+There are separate scripts to lint js and (s)css files, but it would be nice to have a single task to lint both. It can be accomplished using external modules, e.g. [npm-run-all](https://github.com/mysticatea/npm-run-all).
+Using this module ypu can define scripts which will run other scripts in parallel or sequential using `run-p` or `run-s` commands.
+```json
+{
+	"scripts": {
+		"lint:style": "mp-scripts lint-style",
+		"lint:js": "mp-scripts lint-js",
+		"fix:style": "mp-scripts lint-style --fix",
+		"fix:js": "mp-scripts lint-js --fix",
+		"lint": "run-p \"lint:*\"",
+		"lint:fix": "run-p \"fix:*\"",
+	}
+}
+```
+With the above config in your `package.json` you can run:
+* `yarn lint` - to run both `lint:style` and `lint:js` in parallel
+* `yarn lint:fix` - to run both `fix:style` and `fix:js` in parallel
 
 ## 📦 About the Micropackage project
 
