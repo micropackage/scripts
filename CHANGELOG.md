@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Next]
+
+* [Changed] Updated NPM dependencies
+
 ## 1.1.2
 
 * [Fixed] Webpack config
