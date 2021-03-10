@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 
 * [Changed] Updated NPM dependencies
 
+## 1.1.3
+
+* [Changed] Updated NPM dependencies
+
 ## 1.1.2
 
 * [Fixed] Webpack config
