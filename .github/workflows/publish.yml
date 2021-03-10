@@ -6,15 +6,36 @@ on:
       - '*'
 
 jobs:
-  Publish:
+  npm:
+    name: Release on NPM
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 13
           registry-url: https://registry.npmjs.org/
       - run: yarn install
       - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
+  github-release:
+    name: Release on GitHub
+    runs-on: ubuntu-latest
+    needs: pack
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Parse changelog
+        run: |
+          START="## ${GITHUB_REF#refs/tags/}"
+          END="##\$"
+          grep -oPz "(?s)${START}.*?\n\K.*?(?=${END})" CHANGELOG.md > changelog.txt
+          truncate -s-2 changelog.txt
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: changelog.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

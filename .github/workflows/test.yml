@@ -1,6 +1,6 @@
 name: Test
 
-on: ['push', 'pull_request']
+on: push
 
 jobs:
   ESlint:
@@ -11,8 +11,8 @@ jobs:
     - name: Setup Node
       uses: actions/setup-node@v1
       with:
-        node-version: '13'
+        node-version: 13
     - name: ESlint
       run: |
-        npm install
-        npm run lint
+        yarn install
+        yarn lint
