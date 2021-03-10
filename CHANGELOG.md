@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [Next]
+## 1.1.4
 
 * [Changed] Updated NPM dependencies
 
