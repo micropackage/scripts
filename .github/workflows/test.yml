@@ -1,6 +1,6 @@
 name: Test
 
-on: ['push', 'pull_request']
+on: push
 
 jobs:
   ESlint:
@@ -14,5 +14,5 @@ jobs:
         node-version: '13'
     - name: ESlint
       run: |
-        npm install
-        npm run lint
+        yarn install
+        yarn lint
