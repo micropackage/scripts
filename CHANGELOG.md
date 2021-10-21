@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 1.1.6
+
+* [Changed] Updated NPM dependencies
+
 ## 1.1.5
 
 * [Changed] Updated NPM dependencies
