@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 1.2.0
+
+* [Added] node-sass-glob-importer
+* [Added] Shareable config for stylelint
+* [Added] Shareable config for eslint
+* [Addet] Support for font files
+* [Changed] Webpack upgraded to version 5
+* [Changed] Stylelint rules changed to stylelint-config-recommended(-scss)
+* [Changed] Updated NPM dependencies
+
 ## 1.1.6
 
 * [Changed] Updated NPM dependencies

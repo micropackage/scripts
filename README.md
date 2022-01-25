@@ -118,21 +118,22 @@ All arguments other than listed below will be directly passed to [webpack](https
 
 | Name              | Argument           | Type         | Description                                                                                                     |
 |-------------------|--------------------|--------------|-----------------------------------------------------------------------------------------------------------------|
-| **urlLoader**     | --   | boolean\|number    | Whether to use [url-loader](https://github.com/webpack-contrib/url-loader) for images. If number is passed it will be used as '[limit](https://github.com/webpack-contrib/url-loader#limit)' option.<br />**Default: `true`** |
-| **imagemin**   | --   | boolean\|object  | Whether to use [image-webpack-loader](https://github.com/tcoopman/image-webpack-loader) to optimize images with [imagemin](https://github.com/imagemin/imagemin). Object will be passed as [image-webpack-loader](https://github.com/tcoopman/image-webpack-loader) configuration.<br />**Default: `true`** |
+| **inlineAssets**  | true   | boolean\|number    | Whether to use [url-loader](https://github.com/webpack-contrib/url-loader) for images. If number is passed it will be used as '[limit](https://github.com/webpack-contrib/url-loader#limit)' option.<br />**Default: `true`** |
+| **imagemin**      | --   | boolean\|object  | Whether to use [image-webpack-loader](https://github.com/tcoopman/image-webpack-loader) to optimize images with [imagemin](https://github.com/imagemin/imagemin). Object will be passed as [image-webpack-loader](https://github.com/tcoopman/image-webpack-loader) configuration.<br />**Default: `true`** |
 | **paths.src**     | **--src-path**     | string | Source path relative to project root.<br />**Default: `'src/assets'`** |
 | **paths.output**  | **--output-path**  | string       | Output path relative to project root.<br />**Default: `'dist'`**                                                                           |
 | **paths.scripts** | **--scripts-path** | string         | Scripts path relative to `src\|output`. Use `false` to skip this path.<br />**Default: `'js'`**                                                  |
 | **paths.styles**  | **--styles-path**  | string       | Styles path relative to `src\|output`. Use `false` to skip this path.<br />**Default: `'scss'`**                                                   |
-| **paths.images**  | **--images-path**  | string       | Images path relative to `output`. Images included in scripts and styles will be placed in this location if `urlLoader` is turned off or the image size exceeds `limit`.<br />**Default: `'images'`**                                                   |
+| **paths.images**  | **--images-path**  | string       | Images path relative to `output`. Images included in scripts and styles will be placed in this location if `inlineAssets` is turned off or the image size exceeds `limit`.<br />**Default: `'images'`**                                                   |
+| **paths.fonts**  | **--fonts-path**  | Fonts       | Fonts path relative to `output`. Font files included in scripts and styles will be placed in this location.<br />**Default: `'fonts'`**                                                   |
 
 *Example:*
 ```json
 {
 	"mpScriptsConfig": {
-		"urlLoader": 8192,
+		"inlineAssets": 8192,
 		"imagemin": {
-			"svgo": { 
+			"svgo": {
 				"plugins": [
 					{ "removeDoctype": false }
 				]

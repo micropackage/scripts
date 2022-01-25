@@ -1,29 +1,39 @@
+const { Compilation } = require('webpack');
+
 class RemoveSuprefluousAssetsPlugin {
 	apply(compiler) {
-		compiler.hooks.emit.tapAsync(
-			"RemoveSuprefluousAssetsPlugin",
-			(compilation, callback) => {
-				for (const namedChunk of compilation.namedChunks) {
-					const [name, chunk] = namedChunk;
-					const resource = chunk.entryModule.resource;
-
-					if (
-						resource &&
-						(resource.endsWith(".scss") || resource.endsWith(".css"))
-					) {
-						const regexp = new RegExp(`${name}\.((?!css).)*$`);
-
-						for (const asset in compilation.assets) {
-							if (asset.match(regexp)) {
-								delete compilation.assets[asset];
-							}
-						}
-					}
-				}
-
-				callback();
+		compiler.hooks.compilation.tap(
+			'RemoveSuprefluousAssetsPlugin',
+			(compilation) => {
+				compilation.hooks.processAssets.tap(
+					{
+						name: 'RemoveSuprefluousAssetsPlugin',
+						stage: Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE,
+					},
+					() => this.processAssets(compilation)
+				);
 			}
 		);
+	}
+
+	processAssets(compilation) {
+		const names = this.getSassAssetNames(compilation.assets);
+
+		names.forEach((name) => this.filterAssets(compilation, name));
+	}
+
+	filterAssets(compilation, name) {
+		const regex = new RegExp(
+			`${name.substr(0, name.length - 4)}\\.((?!css).)*$`
+		);
+
+		Object.keys(compilation.assets)
+			.filter((asset) => regex.test(asset))
+			.forEach((asset) => compilation.deleteAsset(asset));
+	}
+
+	getSassAssetNames(assets) {
+		return Object.keys(assets).filter((asset) => asset.endsWith('.css'));
 	}
 }
 
