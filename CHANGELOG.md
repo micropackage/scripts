@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [next]
+## 1.2.0
 
 * [Added] node-sass-glob-importer
 * [Added] Shareable config for stylelint
