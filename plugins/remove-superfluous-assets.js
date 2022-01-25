@@ -1,5 +1,4 @@
-const { filter } = require('lodash');
-const { sources, Compilation } = require('webpack');
+const { Compilation } = require('webpack');
 
 class RemoveSuprefluousAssetsPlugin {
 	apply(compiler) {
