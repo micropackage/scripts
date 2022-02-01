@@ -6,6 +6,6 @@ module.exports = {
 	plugins: ['stylelint-order'],
 	rules: {
 		'order/order': ['custom-properties', 'declarations', 'rules'],
-		'order/properties-alphabetical-order': true
+		'order/properties-alphabetical-order': true,
 	},
 };

@@ -24,6 +24,6 @@ module.exports = {
 		],
 	},
 	settings: {
-		'import/resolver': ['webpack', 'node']
-	}
+		'import/resolver': ['webpack', 'node'],
+	},
 };
