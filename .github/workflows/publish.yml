@@ -26,15 +26,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Parse changelog
-        run: |
-          START="## ${{ GITHUB_REF#refs/tags/ }}"
-          END="##"
-          grep -oPz "(?s)${START}.*?\n\K.*?(?=${END})" CHANGELOG.md > changelog.txt
-          truncate -s-2 changelog.txt
       - name: Release
         uses: softprops/action-gh-release@v1
-        with:
-          body_path: changelog.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
