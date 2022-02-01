@@ -2,6 +2,9 @@ module.exports = {
 	extends: ['plugin:@wordpress/eslint-plugin/recommended'],
 	parserOptions: {
 		requireConfigFile: false,
+		babelOptions: {
+			presets: ['@wordpress/babel-preset-default'],
+		},
 	},
 	rules: {
 		'prettier/prettier': [
