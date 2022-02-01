@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [next]
+
+* [Added] Missing babel options
+* [Added] Webpack resolver for ESlint
+* [Changed] Alphabetical order turned on in stylelint
+* [Changed] Updated NPM dependencies
+
 ## 1.2.0
 
 * [Added] node-sass-glob-importer
