@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [next]
+## 1.2.1
 
 * [Added] Missing babel options
 * [Added] Webpack resolver for ESlint
