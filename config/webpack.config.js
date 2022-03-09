@@ -7,6 +7,7 @@ const globImporter = require('node-sass-glob-importer');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 
 /**
  * WordPress dependencies
@@ -277,6 +278,16 @@ module.exports = {
 					filename: `${paths.fonts}/[hash][ext][query]`,
 				},
 			},
+		],
+	},
+	optimization: {
+		minimize: true,
+		minimizer: [
+			new TerserPlugin({
+				terserOptions: {
+					keep_classnames: true,
+				},
+			}),
 		],
 	},
 	plugins: [
