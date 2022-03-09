@@ -125,6 +125,14 @@ if (!hasFileArg()) {
 	}
 }
 
+const alias = Object.fromEntries(
+	Object.entries(paths)
+		.filter(([key]) =>
+			['scripts', 'styles', 'images', 'fonts'].includes(key)
+		)
+		.map(([, value]) => [value, `${paths.src}/${value}`])
+);
+
 const mode = getArg(
 	'--mode',
 	process.env.NODE_ENV === 'production' ? 'production' : 'development'
@@ -149,6 +157,7 @@ module.exports = {
 		publicPath: '../',
 	},
 	resolve: {
+		alias,
 		extensions: ['.ts', '.tsx', '...'],
 	},
 	devtool: isProduction ? false : 'source-map',
