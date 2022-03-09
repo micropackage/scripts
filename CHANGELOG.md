@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 1.2.3
+
+* [Changed] Updated NPM dependencies
+
 ## 1.2.2
 
 * [Added] TypeScript support
