@@ -148,11 +148,14 @@ module.exports = {
 		filename: '[name].js',
 		publicPath: '../',
 	},
+	resolve: {
+		extensions: ['.ts', '.tsx', '...'],
+	},
 	devtool: isProduction ? false : 'source-map',
 	module: {
 		rules: [
 			{
-				test: /\.js$/,
+				test: /\.(t|j)sx?$/,
 				exclude: /node_modules/,
 				use: [
 					require.resolve('thread-loader'),
