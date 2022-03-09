@@ -2,7 +2,6 @@
  * External dependencies
  */
 const { existsSync, lstatSync, readdirSync, realpathSync } = require('fs');
-const { sync: readPkgUp } = require('read-pkg-up');
 const globImporter = require('node-sass-glob-importer');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -20,6 +19,7 @@ const DependencyExtractionWebpackPlugin = require('@wordpress/dependency-extract
 const RemoveSuprefluousAssetsPlugin = require('../plugins/remove-superfluous-assets');
 const {
 	getArg,
+	getPackagePath,
 	getScriptsConfig,
 	hasArg,
 	hasBabelConfig,
@@ -27,9 +27,7 @@ const {
 	hasPostCSSConfig,
 } = require('../utils');
 
-const { path: pkgPath } = readPkgUp({
-	cwd: realpathSync(process.cwd()),
-});
+const pkgPath = getPackagePath();
 
 const config = getScriptsConfig();
 
