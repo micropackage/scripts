@@ -158,6 +158,7 @@ module.exports = {
 	resolve: {
 		alias,
 		extensions: ['.ts', '.tsx', '...'],
+		roots: [path.resolve(pkgPath)],
 	},
 	devtool: isProduction ? false : 'source-map',
 	module: {
