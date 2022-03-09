@@ -1,12 +1,12 @@
 /**
  * External dependencies
  */
-const { existsSync, lstatSync, readdirSync, realpathSync } = require('fs');
-const { sync: readPkgUp } = require('read-pkg-up');
+const { existsSync, lstatSync, readdirSync } = require('fs');
 const globImporter = require('node-sass-glob-importer');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 
 /**
  * WordPress dependencies
@@ -19,6 +19,7 @@ const DependencyExtractionWebpackPlugin = require('@wordpress/dependency-extract
 const RemoveSuprefluousAssetsPlugin = require('../plugins/remove-superfluous-assets');
 const {
 	getArg,
+	getPackagePath,
 	getScriptsConfig,
 	hasArg,
 	hasBabelConfig,
@@ -26,9 +27,7 @@ const {
 	hasPostCSSConfig,
 } = require('../utils');
 
-const { path: pkgPath } = readPkgUp({
-	cwd: realpathSync(process.cwd()),
-});
+const pkgPath = getPackagePath();
 
 const config = getScriptsConfig();
 
@@ -125,6 +124,14 @@ if (!hasFileArg()) {
 	}
 }
 
+const alias = Object.fromEntries(
+	Object.entries(paths)
+		.filter(([key]) =>
+			['scripts', 'styles', 'images', 'fonts'].includes(key)
+		)
+		.map(([, value]) => [value, `${paths.src}/${value}`])
+);
+
 const mode = getArg(
 	'--mode',
 	process.env.NODE_ENV === 'production' ? 'production' : 'development'
@@ -148,11 +155,16 @@ module.exports = {
 		filename: '[name].js',
 		publicPath: '../',
 	},
+	resolve: {
+		alias,
+		extensions: ['.ts', '.tsx', '...'],
+		roots: [path.resolve(pkgPath)],
+	},
 	devtool: isProduction ? false : 'source-map',
 	module: {
 		rules: [
 			{
-				test: /\.js$/,
+				test: /\.(t|j)sx?$/,
 				exclude: /node_modules/,
 				use: [
 					require.resolve('thread-loader'),
@@ -265,6 +277,16 @@ module.exports = {
 					filename: `${paths.fonts}/[hash][ext][query]`,
 				},
 			},
+		],
+	},
+	optimization: {
+		minimize: true,
+		minimizer: [
+			new TerserPlugin({
+				terserOptions: {
+					keep_classnames: true,
+				},
+			}),
 		],
 	},
 	plugins: [

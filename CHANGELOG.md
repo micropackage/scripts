@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 1.2.2
+
+* [Added] TypeScript support
+* [Added] Alias configuration for easier imports
+* [Added] Minimizer config to preserve class names
+
 ## 1.2.1
 
 * [Added] Missing babel options
