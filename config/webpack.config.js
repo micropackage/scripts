@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-const { existsSync, lstatSync, readdirSync, realpathSync } = require('fs');
+const { existsSync, lstatSync, readdirSync } = require('fs');
 const globImporter = require('node-sass-glob-importer');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
