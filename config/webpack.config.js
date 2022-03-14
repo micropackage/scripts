@@ -280,7 +280,7 @@ module.exports = {
 		],
 	},
 	optimization: {
-		minimize: true,
+		minimize: isProduction,
 		minimizer: [
 			new TerserPlugin({
 				terserOptions: {
