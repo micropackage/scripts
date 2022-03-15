@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [next]
+
+* [Fixed] Minimizer is now only enabled for production builds
+* [Added] ESlint config export
+* [Changed] Updated NPM dependencies
+
 ## 1.2.3
 
 * [Changed] Updated NPM dependencies
