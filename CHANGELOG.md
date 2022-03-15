@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 * [Fixed] Minimizer is now only enabled for production builds
 * [Added] ESlint config export
+* [Changed] Stylelint config updated
 * [Changed] Updated NPM dependencies
 
 ## 1.2.3
