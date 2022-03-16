@@ -71,7 +71,8 @@ if (!hasFileArg()) {
 
 		if ('_' !== name.charAt(0)) {
 			const filePath = path.join(srcPath, file);
-			outputPath = outputPath.replace('scss', 'css');
+
+			outputPath = outputPath.replace('scss', 'css').replace('ts', 'js');
 
 			if (lstatSync(filePath).isFile()) {
 				entry[`${outputPath}/${name}`] = filePath;
