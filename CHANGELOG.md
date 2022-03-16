@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [next]
+
+* [Added] Change scripts output path from `ts` to `js`
+
 ## 1.2.4
 
 * [Fixed] Minimizer is now only enabled for production builds
