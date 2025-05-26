@@ -3,17 +3,17 @@ name: Publish
 on:
   push:
     tags:
-      - '*'
+      - "*"
 
 jobs:
   npm:
     name: Release on NPM
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 22
           registry-url: https://registry.npmjs.org/
       - run: yarn install
       - run: npm publish --access public
@@ -25,8 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
