@@ -1,7 +1,7 @@
 {
 	"name": "@micropackage/scripts",
 	"description": "Reusable scripts for (not only) WordPress development.",
-	"version": "1.2.5",
+	"version": "1.2.6",
 	"author": "Wojtek Szałkiewicz <wojtek@szalkiewicz.pl>",
 	"license": "GPL-3.0-or-later",
 	"homepage": "https://github.com/micropackage/scripts",
