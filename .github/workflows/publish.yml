@@ -15,6 +15,7 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org/
+      - run: corepack enable
       - run: yarn install
       - run: npm publish --access public
         env:
